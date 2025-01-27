@@ -29,38 +29,12 @@ def fetch_news_articles(query):
 def main():
     st.set_page_config(page_title="Fake News Detection", page_icon="📰", layout="centered")
 
-    # Custom CSS for styling
-    st.markdown("""
-        <style>
-            .main {
-                background-color: #f0f2f5;
-                padding: 20px;
-                border-radius: 8px;
-            }
-            h1 {
-                color: #4CAF50;
-            }
-            .marquee {
-                font-size: 24px;
-                font-weight: bold;
-                text-align: center;
-            }
-            .article {
-                background-color: #ffffff;
-                border-radius: 5px;
-                padding: 10px;
-                margin-bottom: 10px;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            }
-        </style>
-    """, unsafe_allow_html=True)
-
     # Add a custom header and description
     st.title("Fake News Detection App")
     st.markdown("Welcome to the **Fake News Detection App**. Enter a news article or headline below to check if it's real or fake.")
     
     # Input text area for the user to input news
-    news_input = st.text_area("Enter the news article or headline:", height=150)
+    news_input = st.text_area("Enter the news article or headline:")
 
     label = None
     confidence = None
@@ -81,13 +55,19 @@ def main():
             st.write(f"**Confidence Score:** {confidence:.4f}")
 
             # Set color for the marquee based on classification
-            color = "red" if label == "FAKE" else "green"
-            text = "FAKE NEWS" if label == "FAKE" else "REAL NEWS"
+            if label == "Fake":
+                color = "red"
+                text = "FAKE NEWS"
+                
+            else:
+                color = "green"
+                text = "REAL NEWS"
+                
 
             # Create a marquee for the classification result
             st.markdown(f"""
-                <div style="background-color:{color}; color:white; padding:05px; border-radius:5px;">
-                    <marquee class="marquee" behavior="scroll" direction="left">{text}</marquee>
+                <div style="background-color:{color}; color:white; padding:5px; border-radius:5px; width:100%;">
+                    <marquee behavior="scroll" direction="left">{text}</marquee>
                 </div>
             """, unsafe_allow_html=True)
 
@@ -95,16 +75,14 @@ def main():
             if articles:
                 st.subheader("Related Articles from Trusted Sources:")
                 for article in articles[:3]:  # Show top 3 related articles
+                    # Ensure that the article has necessary data before displaying
                     title = article.get('title', 'No title available')
                     source = article.get('source', {}).get('name', 'Unknown source')
                     url = article.get('url', '#')
 
-                    with st.container():
-                        st.markdown(f"<div class='article'>", unsafe_allow_html=True)
-                        st.write(f"**Source:** {source}")
-                        st.write(f"**Title:** {title}")
-                        st.write(f"**URL:** [Read More]({url})")
-                        st.markdown("</div>", unsafe_allow_html=True)
+                    st.write(f"**Source:** {source}")
+                    st.write(f"**Title:** {title}")
+                    st.write(f"**URL:** [Read More]({url})")
             else:
                 st.write("No related articles found.")
         else:
